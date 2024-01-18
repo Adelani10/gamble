@@ -36,7 +36,7 @@ contract Gamble {
     }
 
     function setOdds(uint256 value) public {
-        if(value == 0) {
+        if (value <= 1) {
             revert Gamble__ZeroOdds();
         }
         odds = value;
@@ -46,10 +46,23 @@ contract Gamble {
         uint256 payOut = playerToAmountStaked[msg.sender] * odds;
         playerToAmountStaked[msg.sender] = 0;
 
-        (bool success,) = payable(i_owner).call{value: payOut}("");
-        if(!success){
+        (bool success, ) = payable(i_owner).call{value: payOut}("");
+        if (!success) {
             revert Gamble__FailedToSend();
         }
+    }
 
+    // GETTERS
+
+    function getOwner() public view returns (address) {
+        return i_owner;
+    }
+
+    function getAmountStakedByPlayer(address _address) public view returns (uint256) {
+        return playerToAmountStaked[_address];
+    }
+
+    function getOdds() public view returns (uint256) {
+        return odds;
     }
 }
